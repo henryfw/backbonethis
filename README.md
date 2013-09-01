@@ -1,4 +1,4 @@
-BackboneThis(JSON)
+BackboneThis
 ============
 This app (http://backbonethis.com) is made for users to easily generate some basic JavaScript code for use with Backbone.js. 
 
