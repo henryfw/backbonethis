@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+<html lang="en"> 
+    <head>
+        
+        <title>Preview</title>  
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.1.1/css/bootstrap.min.css"> 
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js" type="text/javascript"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js" type="text/javascript"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js"></script>
+        <style>body{ margin: 15px; }</style>
+    </head>
+    <body>
+        <div class="page"></div>
+        <script type="text/template" id="users-list-template">
+    <a href="#/users_new" class="btn btn-primary">New</a>
+    <hr />
+    <table class="table striped">
+      <thead>
+        <tr>
+          <th>firstname</th>
+          <th>lastname</th>
+          <th>age</th>
+          
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+      <% _.each(data, function(item) { %>
+        <tr>
+          <td><%= item.get('firstname') %></td> 
+          <td><%= item.get('lastname') %></td> 
+          <td><%= item.get('age') %></td> 
+          
+          <td><a class="btn" href="#/users_edit/<%= item.id %>">Edit</a></td>
+        </tr>
+      <% }); %>
+      </tbody>
+    </table>
+</script> 
+
+<script type="text/template" id="users-edit-template">
+  <form class="users-edit-form">
+    <legend><%= data ? 'Edit' : 'New' %></legend>
+      <label>firstname</label>
+        <input name="firstname" type="text" value="<%= data ? data.get('firstname') : '' %>"> 
+      <label>lastname</label>
+        <input name="lastname" type="text" value="<%= data ? data.get('lastname') : '' %>"> 
+      <label>age</label>
+        <input name="age" type="text" value="<%= data ? data.get('age') : '' %>"> 
+      
+    <hr />
+    <button type="submit" class="btn"><%= data ? 'Update' : 'Create' %></button>
+    <% if (data) { %>
+      <input type="hidden" name="id" value="<%= data.id %>" />
+      <button class="btn btn-danger delete">Delete</button>
+      <button class="btn cancel">Cancel</button>
+    <% }; %>
+  </form>
+</script>
+
+    
+        <script>
+            
+    $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
+      options.url = 'http://backbonejs-beginner.herokuapp.com' + options.url;
+    });
+
+
+        var Users = Backbone.Collection.extend({
+    url : "/users"
+});
+    var User = Backbone.Model.extend({
+    urlRoot : "/users",
+    defaults : {
+        firstname : "",
+        lastname : "",
+        age : ""
+    },
+    getFullName : function (args) {  
+          return this.get('firstname') + 
+                  " " + this.get('lastname');
+        }
+});
+    var UsersListView = Backbone.View.extend({
+    el: '.page',
+    render: function () { 
+        var users = new Users();
+        var that = this;
+        users.fetch({
+            success: function (data) {
+                var template = _.template($('#users-list-template').html(), {data : data.models});
+                that.$el.html(template);
+            }
+        });
+    }
+});
+
+var usersListView = new UsersListView();
+
+var UsersEditView = Backbone.View.extend({
+    el: '.page',
+    events: {
+        'submit .users-edit-form': 'saveItem',
+        'click .delete': 'deleteItem',
+        'click .cancel': 'cancelItem'
+    },
+    item : null,
+    cancelItem : function (e) {
+        router.navigate('', {trigger:true});
+    },
+    deleteItem: function (e) {
+        this.item.destroy({
+            success: function () { 
+                router.navigate('', {trigger:true});
+            }
+        })
+    },
+    render: function (options) { 
+        var that = this;
+        if(options.id) {
+            this.item = new User({id: options.id});
+            this.item.fetch({
+                success: function (data) {        
+                    var template = _.template($('#users-edit-template').html(), {data : data});
+                    that.$el.html(template);
+                }
+            })
+        } else {
+            var template = _.template($('#users-edit-template').html(), {data : null});
+            this.$el.html(template);
+        }
+    },
+    saveItem: function (e) {
+        var details = $(e.currentTarget).serialize();
+        console.log(details);
+        var user = new User();
+        user.save(details, {
+            success: function (data) {
+                router.navigate('', {trigger:true});
+            }
+        });
+        return false;
+    }
+ });
+ 
+ var usersEditView = new UsersEditView();
+
+
+    var Router = Backbone.Router.extend({
+    routes: {
+      "": "home", 
+      "users_edit/:id": "edit",
+      "users_new": "edit",
+    }
+});
+
+var router = new Router;
+router.on('route:home', function() { 
+  usersListView.render();
+})
+router.on('route:edit', function(id) {
+  usersEditView.render({id: id});
+})
+Backbone.history.start();
+
+    
+        </script>
+    </body>
+</html>    

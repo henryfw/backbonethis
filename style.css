@@ -1,0 +1,44 @@
+
+body {
+    margin: 10px; 
+}
+.center {
+    margin: 0 auto;
+    width: 1130px;
+}
+.float_wrap {
+    overflow:auto;
+}
+.input-form-textarea {
+    float:left;
+    width : 700px;
+    height: 500px;
+    font-size: 11px; 
+    line-height: 13px; 
+    outline: none; 
+    transition: all 0.5s;
+    margin-right: 10px;
+} 
+.input-form-sample {
+    word-wrap: pre;
+    float: left;   
+    height: 500px;
+    width: 400px;
+    overflow: hidden;
+    transition: all 0.5s;
+    padding: 4px;
+} 
+
+
+.output-textarea {
+    display:block;
+    width: 1000px;
+    height: 100px;
+    overflow:auto;
+    font-size: 11px; 
+    line-height: 13px; 
+}
+
+#output-textarea-view,  #output-textarea-template {
+    height: 200px;
+}
