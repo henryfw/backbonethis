@@ -137,7 +137,7 @@ var PageView = Backbone.View.extend({
         }).replace(/xscriptx/g, 'script'); 
         var w = window.open();
         if (showAsSource) {
-            template = "<textarea style='width:100%;height:100%;border:0;'>" + template + "</textarea>";
+            template = "<textarea style='width:100%;height:100%;border:0;outline:none'>" + template + "</textarea>";
         }
         return template; 
     },
