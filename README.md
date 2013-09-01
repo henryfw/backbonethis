@@ -1,6 +1,6 @@
 BackboneThis
 ============
-This app (backbonethis.com) is made for user to easily generate some basic JavaScript code for use with Backbone.js. 
+This app (http://backbonethis.com) is made for user to easily generate some basic JavaScript code for use with Backbone.js. 
 
 The app takes an JSON input in the following form:
   
