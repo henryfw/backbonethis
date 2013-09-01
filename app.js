@@ -44,13 +44,16 @@ var Code = Backbone.Model.extend({
 
 var PageView = Backbone.View.extend({
     el : $('#input-container'),
+    cm : null, // codemirror obj
     events: {
       'click .input-form-button': 'backboneThis',
       'click .output-preview-button': 'showPreview',
       'click .output-preview-source-button': 'showPreviewSource',
-      'focus .input-form-textarea' : 'textareaFocus'
+      'click .select-all-btn': 'selectAll'
     },
     backboneThis : function() {
+        this.cm.save();
+        
         var jsonObj;
         try {
             jsonObj = eval( '(' +  $('.input-form-textarea').val() + ')' ); 
@@ -103,31 +106,44 @@ var PageView = Backbone.View.extend({
         });
 
         var template = _.template($('#output-template').html(), { code: code }); 
-        this.textareaUnfocus();
-        $('#output-container').html(template);  
+        $('#output-container').html(template);
+        
+        $('body').scrollTo('#output-container'); 
+         
     },
     render: function () {  
         var template = _.template($('#input-form-template').html(), 
             { sampleCode : $('#sample-json-template').html() } 
         ); 
         this.$el.html(template); 
+        
+        
+        this.cm = CodeMirror.fromTextArea( $(".input-form-textarea", this.$el)[0] , {
+            indentUnit : 4,
+            mode: 'javascript',
+            smartIndent: true,
+            theme: 'solarized dark'
+        });
+        this.cm.setSize(  750,  500 );
 
     },
     generatePreview : function(showAsSource) {
         var template = _.template($('#preview-template').html(), { 
-            template: $( '#output-textarea-template', this.$el).val() ,
-            script : $( '#output-textarea-collection', this.$el).val() + 
-                    $( '#output-textarea-model', this.$el).val() + 
-                    $( '#output-textarea-view', this.$el).val() + 
-                    $( '#output-textarea-router', this.$el).val()
+            template: "<!-- Templates -->\n" + $( '#output-textarea-template', this.$el).val() ,
+            script : "\n/* Collection */\n" + $( '#output-textarea-collection', this.$el).val() + 
+                    "\n/* Model */\n" + $( '#output-textarea-model', this.$el).val() + 
+                    "\n/* View */\n" + $( '#output-textarea-view', this.$el).val() + 
+                    "\n/* Router */\n" + $( '#output-textarea-router', this.$el).val()
         }).replace(/xscriptx/g, 'script'); 
         var w = window.open();
         if (showAsSource) {
-            template = "<textarea style='width:100%;height:100%'>" + template + "<textarea>";
+            template = "<textarea style='width:100%;height:100%;border:0;'>" + template + "</textarea>";
         }
-        return template;
-        w.document.write(template);
-        w.document.close();  
+        return template; 
+    },
+    selectAll : function(e) {
+        var textarea =  $(e.currentTarget).parent().next('textarea');
+        textarea.selectAll();
     },
     showPreview : function() { 
         var w = window.open(); 
@@ -138,12 +154,6 @@ var PageView = Backbone.View.extend({
         var w = window.open(); 
         w.document.write(this.generatePreview(true));
         w.document.close();  
-    }, 
-    textareaFocus: function() {
-        $('.input-form-textarea, .input-form-sample', this.$el).css({height: '', overflow: 'auto'} );
-    },
-    textareaUnfocus: function() {
-        $('.input-form-textarea, .input-form-sample', this.$el).css({height: 50, overflow: 'hidden'});
     }
 }); 
 var pageView = new PageView(); 

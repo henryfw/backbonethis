@@ -92,8 +92,8 @@ class MDB {
     static function refresh() {
         // cache the last accessed time in apc
         $flag = apc_fetch(self::APC_TIMER_FLAG);  
-        
-        if (!$flag || $flag > $_SERVER['REQUEST_TIME'] + self::REFRESH_TIME_LIMIT) {
+                
+        if (!$flag || $_SERVER['REQUEST_TIME'] > $flag + self::REFRESH_TIME_LIMIT) {
             self::$client->testDB->drop();
             apc_store(self::APC_TIMER_FLAG, $_SERVER['REQUEST_TIME']);  
         }  

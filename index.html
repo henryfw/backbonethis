@@ -2,82 +2,106 @@
 <html lang="en"> 
     <head>
         <title>Backbone Scaffold Generator</title> 
-        
-        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.1.1/css/bootstrap.min.css">
+         
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/codemirror/3.12.0/codemirror.min.css">
         <link rel="stylesheet" href="style.css">
          
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js" type="text/javascript"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
         <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js" type="text/javascript"></script>
         <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js"></script>
-        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script> 
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/codemirror/3.12.0/codemirror.min.js"></script>
          
         <script src="utils.js"></script>
               
 <script type="text/template" id="sample-json-template">
 /* Sample JSON */      
 {
-  // collection name. will become Users
-  users: {
-    url : '/users',
-    model :  {
-      // model name. will become User
-      user : {  
-        urlRoot : '/users', 
-        defaults: {
-          "first_name" : "",
-          "last_name" : "",
-          "email" : ""
-        },
-        // add custom methods to model
-        getFullName : function(args) {  
-          return this.get('firstname') + 
-              " " + this.get('lastname');
-        }
-      }
-    } 
-  }
+    // collection name. will become Users
+    users: {
+        url : '/users',
+        model :  {
+            // model name. will become User
+            user : {  
+                urlRoot : '/users', 
+                defaults: {
+                    "first_name" : "",
+                    "last_name" : "",
+                    "email" : ""
+                },
+                // add custom methods to model
+                getFullName : function(args) {  
+                    return this.get('firstname')
+                        + " " 
+                        + this.get('lastname');
+                }
+            }
+        } 
+    }
 }  
 </script>
         
 <script type="text/template" id="input-form-template">
   <form>
-    <h5>Enter JSON</h5> 
+    <h4>Enter JSON</h4> 
     <div class="float_wrap">
-        <textarea class="input-form-textarea"></textarea> 
+        <div class="input-form-container">
+            <textarea class="input-form-textarea">
+{
+    collectionName : {
+        url: '/collection_url',
+        model: {
+            modelName : {
+                defaults: {
+                    field_1 : "",
+                    field_2 : "",
+                    field_3 : "",
+                }
+            }
+        }
+    } 
+}            
+            </textarea> 
+        </div>
         <pre class="input-form-sample"><%= sampleCode %></pre>
     </div>
-    <input type="button" class="input-form-button btn" value="Generate Code" />
+    <input type="button" class="input-form-button btn btn-primary" value="Generate Code" />
   </form>
   <hr/>
   <div id='output-container'></div>
 </script>
 
 <script type="text/template" id="output-template">
+    <div class="float_right"><input type="button" class="btn btn-xs select-all-btn" value="Select All" /></div>
     Collection
-    <textarea class="output-textarea" id="output-textarea-collection"><%= code.getCollection() %>
+    <textarea class="output-textarea " id="output-textarea-collection"><%= code.getCollection() %>
     </textarea>
+    <div class="float_right"><input type="button" class="btn btn-xs select-all-btn" value="Select All" /></div>
     Model
-    <textarea class="output-textarea" id="output-textarea-model"><%= code.getModel() %>
+    <textarea class="output-textarea " id="output-textarea-model"><%= code.getModel() %>
     </textarea>
+    <div class="float_right"><input type="button" class="btn btn-xs select-all-btn" value="Select All" /></div>
     View
-    <textarea class="output-textarea" id="output-textarea-view"><%= code.getView() %>
+    <textarea class="output-textarea " id="output-textarea-view"><%= code.getView() %>
     </textarea>
+    <div class="float_right"><input type="button" class="btn btn-xs select-all-btn" value="Select All" /></div>
     Template
-    <textarea class="output-textarea" id="output-textarea-template"><%= code.getTemplate() %>
+    <textarea class="output-textarea " id="output-textarea-template"><%= code.getTemplate() %>
     </textarea>
+    <div class="float_right"><input type="button" class="btn btn-xs select-all-btn" value="Select All" /></div>
     Router
-    <textarea class="output-textarea" id="output-textarea-router"><%= code.getRouter() %>
+    <textarea class="output-textarea " id="output-textarea-router"><%= code.getRouter() %>
     </textarea>
     <hr/>
-    <input type="button" class="output-preview-button btn" value="View Preview Page" />
-    <input type="button" class="output-preview-source-button btn" value="View Preview Source" />
+    <input type="button" class="output-preview-button btn btn-primary" value="View Preview Page" />
+    <input type="button" class="output-preview-source-button btn btn-primary" value="View Preview Source" />
     <hr/>
     <br/>
     <br/>
 </script>
         
 <script  type="text/template" id="view-template">
-    
 var <%= collectionName %>ListView = Backbone.View.extend({
     el: '.page',
     render: function () { 
@@ -121,15 +145,14 @@ var <%= collectionName %>EditView = Backbone.View.extend({
                     var template = _.template($('#<%= templateName %>-edit-template').html(), {data : data});
                     that.$el.html(template);
                 }
-            })
+            });
         } else {
             var template = _.template($('#<%= templateName %>-edit-template').html(), {data : null});
             this.$el.html(template);
         }
     },
     saveItem: function (e) {    
-        var details = $(e.currentTarget).serializeObject();
-        console.log(details);
+        var details = $(e.currentTarget).serializeObject(); 
         var <%= modelInstanceName %> = new <%= modelName %>();
         <%= modelInstanceName %>.save(details, {
             success: function (data) {
@@ -187,7 +210,6 @@ var <%= collectionInstanceName %>EditView = new <%= collectionName %>EditView();
 </script>
 
 <script type="text/template" id="router-template">
-    
 var Router = Backbone.Router.extend({
     routes: {
       "": "home", 
@@ -221,31 +243,37 @@ Backbone.history.start();
         <div class="container">
             <div class="page"></div>
         </div>
+
 <%= template %>
-        <xscriptx>
-        
-            $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
-              options.url = 'api' + options.url;
-            });
-            
-            $.fn.serializeObject = function() {
-              var o = {};
-              var a = this.serializeArray();
-              $.each(a, function() {
-                  if (o[this.name] !== undefined) {
-                      if (!o[this.name].push) {
-                          o[this.name] = [o[this.name]];
-                      }
-                      o[this.name].push(this.value || '');
-                  } else {
-                      o[this.name] = this.value || '';
-                  }
-              });
-              return o;
-            };
+
+<xscriptx>
+
+/* Define where your api entry point is. The following uses yourdomain.com/api/ */
+$.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
+  options.url = 'api' + options.url;
+});
+
+/* jQuery plugin to turn form into JSON 
+   http://stackoverflow.com/questions/1184624/convert-form-data-to-js-object-with-jquery */
+$.fn.serializeObject = function() {
+  var o = {};
+  var a = this.serializeArray();
+  $.each(a, function() {
+      if (o[this.name] !== undefined) {
+          if (!o[this.name].push) {
+              o[this.name] = [o[this.name]];
+          }
+          o[this.name].push(this.value || '');
+      } else {
+          o[this.name] = this.value || '';
+      }
+  });
+  return o;
+};
             
 <%= script %>
-        </xscriptx>
+</xscriptx>
+
     </body>
 </html>    
 </script>    
@@ -256,10 +284,11 @@ Backbone.history.start();
         <div>
             <p>BackboneThis will generate components for <a href="http://backbonejs.org/">Backbonejs</a> as well as scaffold views that may be helpful.</p>
             <p>This project was motivated by the <a href="https://www.youtube.com/watch?v=FZSjvWtUxYk">Thomas Davis&apos;s video</a> from <a href="http://backbonetutorials.com/">Backbone Tutorials</a>.</p>
-            <p>The source for backboneThis can be found on <a href="http://github.com/henryfw/backbonethis">Github</a>.</p>
+            <p>The source for backboneThis can be found on <a href="http://github.com/henryfw/backbonethis">Github</a> under MIT License.</p>
         </div>
         
-        <script src="app.js"></script>
+        <script src="app.js"></script> 
+        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script> 
           
     </body>
     
