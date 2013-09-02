@@ -54,3 +54,11 @@ body {
     outline: none;
 }
  
+.preview_message {
+    color: #aaa; margin-top: 10px;
+}
+
+.CodeMirror { 
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

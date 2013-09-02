@@ -96,6 +96,7 @@
     <hr/>
     <input type="button" class="output-preview-button btn btn-primary" value="View Preview Page" />
     <input type="button" class="output-preview-source-button btn btn-primary" value="View Preview Source" />
+    <div class="preview_message">Preview currently only supports Chrome.</div>
     <hr/>
     <br/>
     <br/>
@@ -175,7 +176,7 @@ var <%= collectionInstanceName %>EditView = new <%= collectionName %>EditView();
     <table class="table striped">
       <thead>
         <tr>
-          <% _.each(fields, function(v,k) { %><th><%= k %></th>
+          <% _.each(fields, function(v,k) { %><th><%= k.replace(/_/g, ' ') %></th>
           <% }); %>
           <th></th>
         </tr>
@@ -195,7 +196,7 @@ var <%= collectionInstanceName %>EditView = new <%= collectionName %>EditView();
 <xscriptx type="text/template" id="<%= templateName %>-edit-template">
   <form class="<%= templateName %>-edit-form">
     <legend><x%x= data ? 'Edit' : 'New' x%x></legend>
-      <% _.each(fields, function(v,k) { %><label><%= k %></label>
+      <% _.each(fields, function(v,k) { %><label><%= k.replace(/_/g, ' ') %></label>
         <input name="<%= k %>" type="text" value="<x%x= data ? data.get('<%= k %>') : '' x%x>"> 
       <% }); %>
     <hr />
